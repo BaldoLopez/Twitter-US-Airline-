@@ -1,0 +1,7 @@
+@prefix off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+@include <OWL>.
+
+[rule1: (?a rdf:type http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#Tweet) (?a http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#has_airline_sentiment_confidence ?b) ge(?b,"0.7"^^xsd:double)-> (?a rdf:type http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#StrongConfidence) ]
+
+

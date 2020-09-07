@@ -1,0 +1,102 @@
+// QUERY A
+
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?tweet ?long ?lat
+WHERE {
+?tweet rdf:type off:Tweet.
+?tweet off:has_airline off:US_Airways.
+?tweet geo:long ?long.
+?tweet geo:lat ?lat.
+} ORDER BY ?tweet
+
+// QUERY B
+
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?tweet ?confidence 
+WHERE {
+?tweet rdf:type off:Tweet.
+?tweet off:has_airline off:Delta.
+?tweet off:has_airline_sentiment_confidence ?confidence.
+FILTER (xsd:double(?confidence) > 0.7) .
+} ORDER BY ?confidence
+
+// QUERY C
+
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?user (COUNT(distinct ?tweet) AS ?count)
+WHERE {
+?tweet rdf:type off:Tweet.
+?tweet off:has_user_name ?user
+} 
+GROUP BY ?user
+ORDER BY ?count
+
+// QUERY C Bonus
+
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?user (COUNT(distinct ?tweet) AS ?count)
+WHERE {
+?tweet rdf:type off:Tweet.
+?tweet off:has_user_name ?user
+} 
+GROUP BY ?user
+HAVING (?count>10)
+ORDER BY ?count
+
+// QUERY D
+
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX geosf: <http://www.opengis.net/def/function/geosparql/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?tweet ?airline
+WHERE {
+?tweet rdf:type off:Tweet;
+off:has_airline ?airline;
+geosf:nearby("39.87355987" "-75.24730884" 10 <http://qudt.org/vocab/unit#Kilometer> ) .
+}
+
+// QUERY E
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?tweet WHERE {
+?tweet rdf:type off:Tweet; off:has_location ?loc.
+?loc rdf:type ?class.
+SERVICE <http://dbpedia.org/sparql/>{
+SELECT DISTINCT ?loc2 ?label
+WHERE {
+?loc2 rdf:type dbo:Continent; rdfs:label ?label
+}} FILTER(REGEX(?label,"América del Norte"))
+?class rdfs:sameAs ?loc2.
+} 
+
+// QUERY F
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX off: <http://www.semanticweb.org/laia/ontologies/2020/1/Twitter#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?tweet WHERE {
+?tweet rdf:type off:Tweet; off:has_location ?loc.
+?loc rdf:type ?class.
+SERVICE <http://dbpedia.org/sparql/>{
+SELECT DISTINCT ?loc2 ?label
+WHERE {
+?loc2 rdf:type dbo:Continent; rdfs:label ?label
+}} FILTER(REGEX(?label,"América del Norte"))
+?class rdfs:sameAs ?loc2.
+} 
+
+
+
